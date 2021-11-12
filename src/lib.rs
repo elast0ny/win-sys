@@ -1,15 +1,9 @@
-
-
 use std::ffi::OsStr;
 
-use windows::runtime::{HRESULT, HSTRING};
 pub use windows::runtime::{Error, Handle};
+use windows::runtime::{HRESULT, HSTRING};
 pub use windows::Win32::Foundation::{
-    self,
-    HANDLE,
-    PWSTR,
-    ERROR_ALREADY_EXISTS,
-    ERROR_NO_UNICODE_TRANSLATION,
+    self, ERROR_ALREADY_EXISTS, ERROR_NO_UNICODE_TRANSLATION, HANDLE, PWSTR,
 };
 
 mod file_system;
@@ -24,13 +18,14 @@ pub use system_services::*;
 pub fn utf8_to_wchar<S: AsRef<OsStr>>(s: S) -> Result<widestring::U16CString, Error> {
     match widestring::U16CString::from_os_str(s) {
         Ok(w) => Ok(w),
-        Err(_e) => Err(Error::new(HRESULT(ERROR_NO_UNICODE_TRANSLATION.0),  HSTRING::from("Failed to convert utf8 to widechar"))),
+        Err(_e) => Err(Error::new(
+            HRESULT(ERROR_NO_UNICODE_TRANSLATION.0),
+            HSTRING::from("Failed to convert utf8 to widechar"),
+        )),
     }
 }
 
 #[allow(non_snake_case)]
 pub fn CloseHandle(h: HANDLE) -> Result<(), Error> {
-    unsafe {
-        Foundation::CloseHandle(h).ok()
-    }
+    unsafe { Foundation::CloseHandle(h).ok() }
 }

@@ -1,32 +1,31 @@
-use std::{ffi::{OsStr, c_void}, mem::size_of, ptr::null};
+use std::{
+    ffi::{c_void, OsStr},
+    mem::size_of,
+    ptr::null,
+};
 
 pub use windows::Win32::System::Memory::{
-    self,
-    FILE_MAP,
-    FILE_MAP_READ,
-    FILE_MAP_WRITE,
+    self, FILE_MAP, FILE_MAP_READ, FILE_MAP_WRITE, MEMORY_BASIC_INFORMATION, PAGE_PROTECTION_FLAGS,
     PAGE_READWRITE,
-    PAGE_PROTECTION_FLAGS,
-    MEMORY_BASIC_INFORMATION,
 };
 
 use crate::*;
 
 #[allow(non_snake_case)]
-pub fn MapViewOfFile(hfilemappingobject: HANDLE, 
-    dwdesiredaccess: FILE_MAP, 
-    dwfileoffsethigh: u32, 
-    dwfileoffsetlow: u32, 
-    dwnumberofbytestomap: usize
+pub fn MapViewOfFile(
+    hfilemappingobject: HANDLE,
+    dwdesiredaccess: FILE_MAP,
+    dwfileoffsethigh: u32,
+    dwfileoffsetlow: u32,
+    dwnumberofbytestomap: usize,
 ) -> Result<*mut c_void, Error> {
-    
     let v = unsafe {
         Memory::MapViewOfFile(
             hfilemappingobject,
             dwdesiredaccess,
             dwfileoffsethigh,
             dwfileoffsetlow,
-            dwnumberofbytestomap
+            dwnumberofbytestomap,
         )
     };
 
@@ -39,20 +38,18 @@ pub fn MapViewOfFile(hfilemappingobject: HANDLE,
 
 #[allow(non_snake_case)]
 pub fn UnmapViewOfFile(lpbaseaddress: *const c_void) -> Result<(), Error> {
-    unsafe {
-        Memory::UnmapViewOfFile(lpbaseaddress).ok()
-    }
+    unsafe { Memory::UnmapViewOfFile(lpbaseaddress).ok() }
 }
 
 #[allow(non_snake_case)]
-pub fn CreateFileMappingW<S: AsRef<OsStr>>(hfile: HANDLE, 
-    lpfilemappingattributes: Option<&SECURITY_ATTRIBUTES>, 
-    flprotect: PAGE_PROTECTION_FLAGS, 
-    dwmaximumsizehigh: u32, 
-    dwmaximumsizelow: u32, 
-    lpname: S
+pub fn CreateFileMappingW<S: AsRef<OsStr>>(
+    hfile: HANDLE,
+    lpfilemappingattributes: Option<&SECURITY_ATTRIBUTES>,
+    flprotect: PAGE_PROTECTION_FLAGS,
+    dwmaximumsizehigh: u32,
+    dwmaximumsizelow: u32,
+    lpname: S,
 ) -> Result<HANDLE, Error> {
-
     let mut wchar_str = utf8_to_wchar(lpname)?;
 
     let sec_attr = match lpfilemappingattributes {
@@ -60,23 +57,25 @@ pub fn CreateFileMappingW<S: AsRef<OsStr>>(hfile: HANDLE,
         None => null(),
     };
 
-    let h = unsafe { Memory::CreateFileMappingW(
-        hfile,
-        sec_attr,
-        flprotect,
-        dwmaximumsizehigh,
-        dwmaximumsizelow,
-        PWSTR(wchar_str.as_mut_ptr()),
-    )};
+    let h = unsafe {
+        Memory::CreateFileMappingW(
+            hfile,
+            sec_attr,
+            flprotect,
+            dwmaximumsizehigh,
+            dwmaximumsizelow,
+            PWSTR(wchar_str.as_mut_ptr()),
+        )
+    };
 
     h.ok()
 }
 
 #[allow(non_snake_case)]
-pub fn VirtualQuery(lpaddress: *const c_void, 
-    lpbuffer: &mut MEMORY_BASIC_INFORMATION, 
+pub fn VirtualQuery(
+    lpaddress: *const c_void,
+    lpbuffer: &mut MEMORY_BASIC_INFORMATION,
 ) -> Result<(), Error> {
-
     let bytes_written = unsafe {
         Memory::VirtualQuery(
             lpaddress,

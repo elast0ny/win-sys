@@ -3,7 +3,14 @@ name = "win-sys"
 version = "0.1.0"
 edition = "2021"
 
-# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+readme = "README.md"
+documentation = "https://docs.rs/win-sys"
+repository = "https://github.com/elast0ny/win-sys"
+keywords = ["windows", "native", "system", "api"]
+categories = [
+    "api-bindings",
+    "os::windows-apis",
+]
 
 [dependencies]
 widestring = "0.5"
