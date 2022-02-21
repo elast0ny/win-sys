@@ -1,7 +1,6 @@
 use std::ffi::OsStr;
 
-pub use windows::runtime::{Error, Handle};
-use windows::runtime::{HRESULT, HSTRING};
+pub use windows::core::{Error, HRESULT, HSTRING};
 pub use windows::Win32::Foundation::{
     self, ERROR_ALREADY_EXISTS, ERROR_NO_UNICODE_TRANSLATION, HANDLE, PWSTR,
 };
@@ -19,7 +18,7 @@ pub fn utf8_to_wchar<S: AsRef<OsStr>>(s: S) -> Result<widestring::U16CString, Er
     match widestring::U16CString::from_os_str(s) {
         Ok(w) => Ok(w),
         Err(_e) => Err(Error::new(
-            HRESULT(ERROR_NO_UNICODE_TRANSLATION.0),
+            HRESULT(ERROR_NO_UNICODE_TRANSLATION.0 as _),
             HSTRING::from("Failed to convert utf8 to widechar"),
         )),
     }
