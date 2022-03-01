@@ -1,8 +1,6 @@
-use std::ffi::OsStr;
-
-pub use windows::core::{Error, HRESULT, HSTRING};
+pub use windows::core::{*};
 pub use windows::Win32::Foundation::{
-    self, ERROR_ALREADY_EXISTS, ERROR_NO_UNICODE_TRANSLATION, HANDLE, PWSTR,
+    self, *,
 };
 
 mod file_system;
@@ -14,15 +12,7 @@ pub use security::*;
 mod system_services;
 pub use system_services::*;
 
-pub fn utf8_to_wchar<S: AsRef<OsStr>>(s: S) -> Result<widestring::U16CString, Error> {
-    match widestring::U16CString::from_os_str(s) {
-        Ok(w) => Ok(w),
-        Err(_e) => Err(Error::new(
-            HRESULT(ERROR_NO_UNICODE_TRANSLATION.0 as _),
-            HSTRING::from("Failed to convert utf8 to widechar"),
-        )),
-    }
-}
+use core::result::Result;
 
 #[allow(non_snake_case)]
 pub fn CloseHandle(h: HANDLE) -> Result<(), Error> {

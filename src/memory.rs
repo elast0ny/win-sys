@@ -11,6 +11,8 @@ pub use windows::Win32::System::Memory::{
 
 use crate::*;
 
+use core::result::Result;
+
 pub struct ViewOfFile(*mut c_void);
 impl ViewOfFile {
     pub fn as_mut_ptr(&self) -> *mut c_void {
@@ -81,8 +83,6 @@ pub fn CreateFileMapping<S: AsRef<OsStr>>(
     dwmaximumsizelow: u32,
     lpname: S,
 ) -> Result<FileMapping, Error> {
-    let mut wchar_str = utf8_to_wchar(lpname)?;
-
     let sec_attr = match lpfilemappingattributes {
         Some(s) => s as *const SECURITY_ATTRIBUTES,
         None => null(),
@@ -95,7 +95,7 @@ pub fn CreateFileMapping<S: AsRef<OsStr>>(
             flprotect,
             dwmaximumsizehigh,
             dwmaximumsizelow,
-            PWSTR(wchar_str.as_mut_ptr()),
+            lpname.as_ref(),
         )
     };
 
@@ -108,13 +108,11 @@ pub fn OpenFileMapping<S: AsRef<OsStr>>(
     inherit_handle: bool,
     name: S,
 ) -> Result<FileMapping, Error> {
-    let mut wchar_str = utf8_to_wchar(name)?;
-
     let h = unsafe {
         Memory::OpenFileMappingW(
             desired_access.0,
             inherit_handle,
-            PWSTR(wchar_str.as_mut_ptr()),
+            name.as_ref(),
         )
     };
 
