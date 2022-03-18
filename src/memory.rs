@@ -4,6 +4,7 @@ use std::{
     ptr::null,
 };
 
+#[doc(hidden)]
 pub use windows::Win32::System::Memory::{
     self, FILE_MAP, FILE_MAP_ALL_ACCESS, FILE_MAP_READ, FILE_MAP_WRITE, MEMORY_BASIC_INFORMATION,
     PAGE_PROTECTION_FLAGS, PAGE_READWRITE,

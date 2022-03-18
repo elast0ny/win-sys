@@ -1,4 +1,6 @@
+#[doc(hidden)]
 pub use windows::core::{*};
+#[doc(hidden)]
 pub use windows::Win32::Foundation::{
     self, *,
 };
